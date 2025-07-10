@@ -47,54 +47,53 @@
 
   <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
-      authDomain: "quickfixcrew-717cc.firebaseapp.com",
-      projectId: "quickfixcrew-717cc",
-      storageBucket: "quickfixcrew-717cc.appspot.com",
-      messagingSenderId: "907519125984",
-      appId: "1:907519125984:web:20eced6ae597eb454b2385"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const techId = urlParams.get('id');
+  async function listTechJobs() {
+    const container = document.createElement("section");
+    container.className = "container";
+    container.innerHTML = `<h2>Technician Job Posts</h2><div id="job-board"></div>`;
+    document.body.insertBefore(container, document.querySelector("footer"));
 
-    async function fetchTechnician(id) {
-      const q = query(collection(db, "technicians"), where("id", "==", id));
-      const snapshot = await getDocs(q);
-      const card = document.getElementById("tech-card");
+    const board = container.querySelector("#job-board");
+    board.style.display = "grid";
+    board.style.gridTemplateColumns = "repeat(auto-fit, minmax(260px, 1fr))";
+    board.style.gap = "30px";
+    board.style.marginTop = "20px";
 
-      if (!snapshot.empty) {
-        const tech = snapshot.docs[0].data();
-        card.innerHTML = `
-          <img src="${tech.photoURL}" alt="${tech.name}" />
-          <h2>${tech.name}</h2>
-          <p><strong>Location:</strong> ${tech.location}</p>
-          <p><strong>Skills:</strong> ${tech.skills}</p>
-          <p><strong>Specialty:</strong> ${tech.specialty}</p>
-          <p><strong>Rating:</strong> ${tech.rating}</p>
-          <p><strong>Bio:</strong> ${tech.bio}</p>
-          <p><strong>Contact:</strong> ${tech.contact}</p>
-          <a href="index.html" class="back-link">← Back to Directory</a>
-        `;
-      } else {
-        card.innerHTML = `<p>Technician not found.</p><a href="index.html" class="back-link">← Back to Directory</a>`;
-      }
-    }
+    const snapshot = await getDocs(collection(db, "tech_jobs"));
+    board.innerHTML = "";
 
-    if (techId) {
-      fetchTechnician(techId);
-    } else {
-      document.getElementById("tech-card").innerHTML = `<p>No technician ID provided.</p><a href="index.html" class="back-link">← Back to Directory</a>`;
-    }
-  </script>
+    snapshot.forEach(doc => {
+      const job = doc.data();
+      board.innerHTML += `
+        <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="color:#007acc">${job.techName}</h3>
+          <p><strong>Service:</strong> ${job.service}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Details:</strong> ${job.details}</p>
+          <p><strong>Available At:</strong> ${new Date(job.availableAt).toLocaleString()}</p>
+        </div>
+      `;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", listTechJobs);
+</script>
+
 </head>
 <body>
   <div class="card" id="tech-card">
