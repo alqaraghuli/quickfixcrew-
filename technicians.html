@@ -54,49 +54,53 @@
 
   <!-- Firebase SDKs -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
-      authDomain: "quickfixcrew-717cc.firebaseapp.com",
-      projectId: "quickfixcrew-717cc",
-      storageBucket: "quickfixcrew-717cc.appspot.com",
-      messagingSenderId: "907519125984",
-      appId: "1:907519125984:web:20eced6ae597eb454b2385"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    async function loadTechnicians() {
-      const snapshot = await getDocs(collection(db, "technicians"));
-      const grid = document.getElementById("tech-grid");
+  async function listTechJobs() {
+    const container = document.createElement("section");
+    container.className = "container";
+    container.innerHTML = `<h2>Technician Job Posts</h2><div id="job-board"></div>`;
+    document.body.insertBefore(container, document.querySelector("footer"));
 
-      if (snapshot.empty) {
-        grid.innerHTML = "<p>No technicians found.</p>";
-        return;
-      }
+    const board = container.querySelector("#job-board");
+    board.style.display = "grid";
+    board.style.gridTemplateColumns = "repeat(auto-fit, minmax(260px, 1fr))";
+    board.style.gap = "30px";
+    board.style.marginTop = "20px";
 
-      snapshot.forEach(doc => {
-        const tech = doc.data();
-        const card = document.createElement("div");
-        card.className = "card";
+    const snapshot = await getDocs(collection(db, "tech_jobs"));
+    board.innerHTML = "";
 
-        card.innerHTML = `
-          <img src="${tech.photoURL}" alt="${tech.name}" />
-          <h3>${tech.name}</h3>
-          <p><strong>Skills:</strong> ${tech.skills}</p>
-          <p><strong>Location:</strong> ${tech.location}</p>
-          <a href="technician-details.html?id=${tech.id}">Hire this Technician</a>
-        `;
+    snapshot.forEach(doc => {
+      const job = doc.data();
+      board.innerHTML += `
+        <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="color:#007acc">${job.techName}</h3>
+          <p><strong>Service:</strong> ${job.service}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Details:</strong> ${job.details}</p>
+          <p><strong>Available At:</strong> ${new Date(job.availableAt).toLocaleString()}</p>
+        </div>
+      `;
+    });
+  }
 
-        grid.appendChild(card);
-      });
-    }
+  document.addEventListener("DOMContentLoaded", listTechJobs);
+</script>
 
-    window.addEventListener("DOMContentLoaded", loadTechnicians);
-  </script>
 </head>
 <body>
   <h1>Available Technicians</h1>
