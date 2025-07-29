@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Customer Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 40px;
+    }
+    .profile-container {
+      max-width: 500px;
+      background: #fff;
+      padding: 30px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .avatar-wrapper {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .avatar-wrapper img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #ddd;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .avatar-wrapper img:hover {
+      border-color: #007acc;
+    }
+    .profile-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .profile-container label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    .profile-container input, .profile-container select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .profile-container button {
+      margin-top: 25px;
+      width: 100%;
+      background: #007acc;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .profile-container button:hover {
+      background: #005f99;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-container">
+    <div class="avatar-wrapper">
+      <label for="avatarInput">
+        <img src="https://i.ibb.co/2Mbsq2Y/default-avatar.png" id="avatarPreview" alt="Avatar" />
+      </label>
+      <input type="file" id="avatarInput" accept="image/*" style="display: none;" />
+    </div>
+
+    <h2>Your Profile</h2>
+
+    <form id="profileForm">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" placeholder="John Doe" required />
+
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" placeholder="123-456-7890" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="john@example.com" required />
+
+      <label for="location">Location</label>
+      <input type="text" id="location" placeholder="Toronto, ON" />
+
+      <label for="language">Preferred Language</label>
+      <select id="language">
+        <option value="English">English</option>
+        <option value="French">French</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="notifications">Notifications</label>
+      <select id="notifications">
+        <option value="Email">Email</option>
+        <option value="SMS">SMS</option>
+        <option value="Push">Push Notification</option>
+        <option value="None">None</option>
+      </select>
+
+      <button type="submit">Save Profile</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+      authDomain: "quickfixcrew-717cc.firebaseapp.com",
+      projectId: "quickfixcrew-717cc",
+      storageBucket: "quickfixcrew-717cc.appspot.com",
+      messagingSenderId: "907519125984",
+      appId: "1:907519125984:web:20eced6ae597eb454b2385"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    avatarInput.addEventListener("change", function () {
+      const file = avatarInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          avatarPreview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const docRef = doc(db, "customers", user.uid);
+        getDoc(docRef).then(docSnap => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('fullName').value = data.fullName || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('location').value = data.location || '';
+            document.getElementById('language').value = data.language || 'English';
+            document.getElementById('notifications').value = data.notifications || 'Email';
+          }
+        });
+
+        document.getElementById("profileForm").addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const fullName = document.getElementById("fullName").value;
+          const phone = document.getElementById("phone").value;
+          const email = document.getElementById("email").value;
+          const location = document.getElementById("location").value;
+          const language = document.getElementById("language").value;
+          const notifications = document.getElementById("notifications").value;
+
+          await setDoc(doc(db, "customers", user.uid), {
+            fullName,
+            phone,
+            email,
+            location,
+            language,
+            notifications
+          });
+
+          alert("✅ Profile saved to Firebase!");
+        });
+      }
+    });
+  </script>
+</body>
+</html>

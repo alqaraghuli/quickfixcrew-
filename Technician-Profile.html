@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f9fafc;
+      color: #333;
+    }
+    .profile-container {
+      max-width: 900px;
+      margin: auto;
+      text-align: center;
+    }
+    .profile-image {
+      position: relative;
+      display: inline-block;
+    }
+    .profile-image img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ccc;
+    }
+    .edit-button {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 8px 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .edit-button input[type="file"] {
+      display: none;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+    }
+    p.subtext {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+    .fields-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .field {
+      width: 280px;
+      text-align: left;
+      background: #f1f6fb;
+      padding: 16px;
+      border-radius: 10px;
+    }
+    .field label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .save-button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #2e86de;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <div class="profile-image">
+      <img id="profilePic" src="default-profile.jpg" alt="Profile Picture" />
+      <label class="edit-button">
+        📷 Edit
+        <input type="file" accept="image/*" onchange="previewImage(event)" />
+      </label>
+    </div>
+    <h1>My Technician Profile</h1>
+    <p class="subtext">Your details are visible to customers to build trust.</p>
+
+    <div class="fields-grid">
+      <div class="field">
+        <label for="specialty">🧰 My trade specialty</label>
+        <input id="specialty" type="text" />
+      </div>
+      <div class="field">
+        <label for="location">📍 Where I work</label>
+        <input id="location" type="text" />
+      </div>
+      <div class="field">
+        <label for="school">🎓 Where I trained</label>
+        <input id="school" type="text" />
+      </div>
+      <div class="field">
+        <label for="experience">🧪 My years of experience</label>
+        <input id="experience" type="text" />
+      </div>
+      <div class="field">
+        <label for="tools">🔧 Tools I own</label>
+        <input id="tools" type="text" />
+      </div>
+      <div class="field">
+        <label for="availability">⏰ My availability</label>
+        <input id="availability" type="text" />
+      </div>
+      <div class="field">
+        <label for="languages">📚 Languages I speak</label>
+        <input id="languages" type="text" />
+      </div>
+      <div class="field">
+        <label for="style">💬 My communication style</label>
+        <input id="style" type="text" />
+      </div>
+      <div class="field">
+        <label for="travel">🚗 Do I travel for jobs?</label>
+        <input id="travel" type="text" />
+      </div>
+      <div class="field">
+        <label for="proud">🌟 My proudest completed job</label>
+        <input id="proud" type="text" />
+      </div>
+      <div class="field">
+        <label for="learn">🎯 What I want to learn next</label>
+        <input id="learn" type="text" />
+      </div>
+      <div class="field">
+        <label for="bio">📖 My short bio</label>
+        <textarea id="bio" rows="3"></textarea>
+      </div>
+    </div>
+
+    <button class="save-button" id="saveProfile">Save Profile</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+      authDomain: "quickfixcrew-717cc.firebaseapp.com",
+      projectId: "quickfixcrew-717cc",
+      storageBucket: "quickfixcrew-717cc.appspot.com",
+      messagingSenderId: "907519125984",
+      appId: "1:907519125984:web:20eced6ae597eb454b2385"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docRef = doc(db, "technician_profiles", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          for (const key in data) {
+            const field = document.getElementById(key);
+            if (field) field.value = data[key];
+          }
+        }
+      }
+    });
+
+    document.getElementById('saveProfile').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to save your profile.");
+        return;
+      }
+
+      const profileData = {
+        specialty: document.getElementById('specialty').value,
+        location: document.getElementById('location').value,
+        school: document.getElementById('school').value,
+        experience: document.getElementById('experience').value,
+        tools: document.getElementById('tools').value,
+        availability: document.getElementById('availability').value,
+        languages: document.getElementById('languages').value,
+        style: document.getElementById('style').value,
+        travel: document.getElementById('travel').value,
+        proud: document.getElementById('proud').value,
+        learn: document.getElementById('learn').value,
+        bio: document.getElementById('bio').value
+      };
+
+      try {
+        await setDoc(doc(db, "technician_profiles", user.uid), profileData);
+        alert("✅ Profile saved successfully!");
+      } catch (error) {
+        console.error("Error saving profile:", error);
+        alert("❌ Failed to save profile.");
+      }
+    });
+  </script>
+
+  <script>
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (!file || !(file instanceof Blob)) {
+        alert("Invalid file. Please select a valid image.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('profilePic').src = reader.result;
+      }
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
