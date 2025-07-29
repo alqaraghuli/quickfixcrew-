@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickFixCrew - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #007acc, #ffa500);
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      background: linear-gradient(to right, #007acc, #ffa500);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background-color: #ffa500;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      color: #007acc;
+    }
+
+    .how-it-works {
+      margin-top: 60px;
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .how-it-works div {
+      flex: 1;
+      min-width: 250px;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #fff;
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+<style>
+  .profile-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    background: url('https://img.icons8.com/ios-glyphs/30/user--v1.png') no-repeat center center;
+    background-size: contain;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 200px;
+    z-index: 10;
+  }
+
+  .dropdown a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+  }
+
+  .dropdown a:hover {
+    background-color: #f0f0f0;
+  }
+</style>
+
+<div class="profile-menu">
+  <div class="profile-icon" id="menuIcon"></div>
+  <div class="dropdown" id="dropdownMenu">
+    <a href="customer-profile.html">Profile</a>
+    <a href="Messaging%20Inbox.html">Messages</a>
+    <a href="#">Account Settings</a>
+    <a href="#">Language & Currency</a>
+    <a href="#">Help Center</a>
+    <li><a href="#" id="logoutBtn">Logout</a></li>
+
+  </div>
+</div>
+
+<script>
+  const menuIcon = document.getElementById("menuIcon");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  menuIcon.addEventListener("click", () => {
+    dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+  });
+
+  // Hide dropdown when clicking outside
+  window.addEventListener("click", (e) => {
+    if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.style.display = "none";
+    }
+  });
+</script>
+
+  <header>
+    <div class="logo">QuickFixCrew</div>
+    <div class="nav-buttons">
+      <a href="customer-login.html" class="btn-primary">Customer Login</a>
+      <a href="technician-login.html" class="btn-primary">Technician Login</a>
+    </div>
+  </header>
+
+  <section class="section hero">
+    <h2>Your Trusted Repair Crew — Fast, Friendly, Reliable</h2>
+    <p style="margin: 20px 0;">Connecting you with skilled technicians for all your repair needs.</p>
+    <a href="post-job.html" class="btn-primary">Post a Job</a>
+    <a href="technicians.html" class="btn-primary">Hire a Technician</a>
+  </section>
+
+  <section class="section">
+    <h2 style="text-align:center; margin-bottom: 40px;">How It Works</h2>
+    <div class="how-it-works">
+      <div>
+        <h3>1. Post a Job</h3>
+        <p>Tell us what you need fixed or installed.</p>
+      </div>
+      <div>
+        <h3>2. Get Matched</h3>
+        <p>We connect you with nearby qualified technicians.</p>
+      </div>
+      <div>
+        <h3>3. Job Completed</h3>
+        <p>Get the work done and leave a review!</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 QuickFixCrew. All rights reserved.
+  </footer>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  document.getElementById("logoutBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth)
+      .then(() => {
+        window.location.href = "customer-login.html"; // Redirect to login after logout
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+        alert("Error logging out. Please try again.");
+      });
+  });
+</script>
+</body>
+</html>
