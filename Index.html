@@ -2,345 +2,236 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>QuickFixCrew - Your Trusted Repair Crew</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickFixCrew - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* Reset & base */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Open Sans', sans-serif;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
     }
 
     body {
-      background: #f9fafd;
+      background: linear-gradient(to right, #007acc, #ffa500);
       color: #333;
-      line-height: 1.6;
     }
 
-    a {
-      text-decoration: none;
-      color: #007acc;
-    }
-
-    /* Container */
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 0 20px;
-    }
-
-    /* Header / Hero */
     header {
-      background: #007acc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      background: linear-gradient(to right, #007acc, #ffa500);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-size: 2.5rem;
       color: white;
-      padding: 60px 20px;
-      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     }
 
-    header h1 {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    header p {
-      font-size: 1.3rem;
-      margin-bottom: 30px;
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
     }
 
     .btn-primary {
-      background: #ff9500;
-      color: white;
-      padding: 15px 30px;
+      background-color: #ffa500;
+      color: #fff;
       border: none;
-      border-radius: 25px;
-      font-size: 1.1rem;
+      padding: 10px 18px;
+      border-radius: 8px;
       cursor: pointer;
-      margin: 0 10px;
-      transition: background 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background: #cc7a00;
-    }
-
-    /* Search Section */
-    #search-section {
-      background: white;
-      padding: 30px 20px;
-      margin-top: -30px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 10px;
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    #search-section form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    select, input[type="text"] {
-      padding: 12px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      flex: 1 1 200px;
-    }
-
-    button#search-btn {
-      background: #007acc;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 1.1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      flex: 0 0 auto;
-      transition: background 0.3s ease;
-    }
-
-    button#search-btn:hover {
-      background: #005f99;
-    }
-
-    /* Section Titles */
-    section h2 {
-      text-align: center;
-      margin: 50px 0 30px 0;
-      font-family: 'Poppins', sans-serif;
-      color: #007acc;
-      font-weight: 700;
-    }
-
-    /* How It Works */
-    #how-it-works {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 30px;
-      padding: 0 20px;
-    }
-
-    .step {
-      background: white;
-      flex: 1 1 250px;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .step h3 {
-      margin-bottom: 15px;
-      color: #ff9500;
-      font-weight: 700;
-    }
-
-    /* Popular Services */
-    #popular-services {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 30px;
-      padding: 0 20px;
-    }
-
-    .service {
-      background: white;
-      width: 160px;
-      height: 160px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: default;
-      transition: transform 0.3s ease;
-    }
-
-    .service:hover {
-      transform: scale(1.05);
-    }
-
-    .service-icon {
-      font-size: 3rem;
-      color: #007acc;
-      margin-bottom: 15px;
-    }
-
-    .service-name {
-      font-weight: 700;
-      color: #333;
-    }
-
-    /* Testimonials */
-    #testimonials {
-      max-width: 900px;
-      margin: auto;
-      padding: 0 20px 60px 20px;
-    }
-
-    .testimonial {
-      background: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    .testimonial p {
-      font-style: italic;
-      margin-bottom: 15px;
-    }
-
-    .testimonial .author {
-      text-align: right;
-      font-weight: 700;
-      color: #007acc;
-    }
-
-    /* Footer */
-    footer {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 25px 20px;
-      font-size: 0.9rem;
-    }
-
-    footer a {
-      color: #ff9500;
-      margin: 0 8px;
       font-weight: 600;
+      text-decoration: none;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      #how-it-works, #popular-services {
-        flex-direction: column;
-        align-items: center;
-      }
+    .section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+    }
 
-      header h1 {
-        font-size: 2.2rem;
-      }
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      color: #007acc;
+    }
+
+    .how-it-works {
+      margin-top: 60px;
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .how-it-works div {
+      flex: 1;
+      min-width: 250px;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #fff;
+      background: #333;
     }
   </style>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
+<style>
+  .profile-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    background: url('https://img.icons8.com/ios-glyphs/30/user--v1.png') no-repeat center center;
+    background-size: contain;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 200px;
+    z-index: 10;
+  }
+
+  .dropdown a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+  }
+
+  .dropdown a:hover {
+    background-color: #f0f0f0;
+  }
+</style>
+
+<div class="profile-menu">
+  <div class="profile-icon" id="menuIcon"></div>
+  <div class="dropdown" id="dropdownMenu">
+    <a href="customer-profile.html">Profile</a>
+    <a href="Messaging%20Inbox.html">Messages</a>
+    <a href="#">Account Settings</a>
+    <a href="#">Language & Currency</a>
+    <a href="#">Help Center</a>
+    <li><a href="#" id="logoutBtn">Logout</a></li>
+
+  </div>
+</div>
+
+<script>
+  const menuIcon = document.getElementById("menuIcon");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  menuIcon.addEventListener("click", () => {
+    dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+  });
+
+  // Hide dropdown when clicking outside
+  window.addEventListener("click", (e) => {
+    if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.style.display = "none";
+    }
+  });
+</script>
+
   <header>
-    <div class="container">
-      <h1>QuickFixCrew</h1>
-      <p>Your Trusted Repair Crew — Fast, Friendly, Reliable</p>
-      <button class="btn-primary">Post a Job</button>
-      <button class="btn-primary">Hire a Technician</button>
+    <div class="logo">QuickFixCrew</div>
+    <div class="nav-buttons">
+      <a href="customer-login.html" class="btn-primary">Customer Login</a>
+      <a href="technician-login.html" class="btn-primary">Technician Login</a>
     </div>
   </header>
 
-  <section id="search-section">
-    <form action="#" method="GET">
-      <select name="service" aria-label="Select service">
-        <option value="" disabled selected>Choose Service</option>
-        <option value="plumbing">Plumbing</option>
-        <option value="electrical">Electrical</option>
-        <option value="painting">Painting</option>
-        <option value="furniture-assembly">Furniture Assembly</option>
-        <option value="general-repairs">General Repairs</option>
-        <option value="appliance-installation">Appliance Installation</option>
-        <option value="flooring">Flooring</option>
-        <option value="yard-work">Yard Work</option>
-      </select>
-      <input type="text" name="location" placeholder="Enter your location" aria-label="Location" />
-      <button type="submit" id="search-btn">Search</button>
-    </form>
+  <section class="section hero">
+    <h2>Your Trusted Repair Crew — Fast, Friendly, Reliable</h2>
+    <p style="margin: 20px 0;">Connecting you with skilled technicians for all your repair needs.</p>
+    <a href="post-job.html" class="btn-primary">Post a Job</a>
+    <a href="technicians.html" class="btn-primary">Hire a Technician</a>
   </section>
 
-  <section id="how-it-works" class="container">
-    <h2>How It Works</h2>
-    <div class="step">
-      <h3>1. Post a Job</h3>
-      <p>Tell us what you need fixed or installed with details and your preferred timing.</p>
-    </div>
-    <div class="step">
-      <h3>2. Get Matched</h3>
-      <p>Our platform connects you with verified repair professionals in your area.</p>
-    </div>
-    <div class="step">
-      <h3>3. Job Completed</h3>
-      <p>Hire, complete your job, and rate your experience for future customers.</p>
-    </div>
-  </section>
-
-  <section id="popular-services" class="container">
-    <h2>Popular Services</h2>
-    <div class="service" title="Plumbing">
-      <div class="service-icon">🔧</div>
-      <div class="service-name">Plumbing</div>
-    </div>
-    <div class="service" title="Electrical">
-      <div class="service-icon">💡</div>
-      <div class="service-name">Electrical</div>
-    </div>
-    <div class="service" title="Painting">
-      <div class="service-icon">🎨</div>
-      <div class="service-name">Painting</div>
-    </div>
-    <div class="service" title="Furniture Assembly">
-      <div class="service-icon">🛠️</div>
-      <div class="service-name">Furniture Assembly</div>
-    </div>
-    <div class="service" title="General Repairs">
-      <div class="service-icon">🔨</div>
-      <div class="service-name">General Repairs</div>
-    </div>
-    <div class="service" title="Appliance Installation">
-      <div class="service-icon">⚙️</div>
-      <div class="service-name">Appliance Installation</div>
-    </div>
-    <div class="service" title="Flooring">
-      <div class="service-icon">🪵</div>
-      <div class="service-name">Flooring</div>
-    </div>
-    <div class="service" title="Yard Work">
-      <div class="service-icon">🌿</div>
-      <div class="service-name">Yard Work</div>
-    </div>
-  </section>
-
-  <section id="testimonials" class="container">
-    <h2>What Our Clients Say</h2>
-    <div class="testimonial">
-      <p>"QuickFixCrew connected me with a skilled plumber fast. Excellent service and fair pricing!"</p>
-      <div class="author">– Jane D.</div>
-    </div>
-    <div class="testimonial">
-      <p>"I hired QuickFixCrew for furniture assembly and they did an amazing job. Highly recommend."</p>
-      <div class="author">– Mike R.</div>
-    </div>
-    <div class="testimonial">
-      <p>"The electrical repair expert I found here saved me time and hassle. Easy booking and professional."</p>
-      <div class="author">– Sarah K.</div>
+  <section class="section">
+    <h2 style="text-align:center; margin-bottom: 40px;">How It Works</h2>
+    <div class="how-it-works">
+      <div>
+        <h3>1. Post a Job</h3>
+        <p>Tell us what you need fixed or installed.</p>
+      </div>
+      <div>
+        <h3>2. Get Matched</h3>
+        <p>We connect you with nearby qualified technicians.</p>
+      </div>
+      <div>
+        <h3>3. Job Completed</h3>
+        <p>Get the work done and leave a review!</p>
+      </div>
     </div>
   </section>
 
   <footer>
-    <p>© 2025 QuickFixCrew. All rights reserved. | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
-    <p>Connect with us on
-      <a href="#" aria-label="Facebook">Facebook</a> |
-      <a href="#" aria-label="Twitter">Twitter</a> |
-      <a href="#" aria-label="LinkedIn">LinkedIn</a>
-    </p>
+    &copy; 2025 QuickFixCrew. All rights reserved.
   </footer>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  document.getElementById("logoutBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth)
+      .then(() => {
+        window.location.href = "customer-login.html"; // Redirect to login after logout
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+        alert("Error logging out. Please try again.");
+      });
+  });
+</script>
 </body>
 </html>
