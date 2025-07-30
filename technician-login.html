@@ -88,12 +88,22 @@
     </form>
   </div>
 
-  <script type="module">
+ <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore,
+    setDoc,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ✅ Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
     authDomain: "quickfixcrew-717cc.firebaseapp.com",
@@ -106,14 +116,15 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-  // ✅ UI Elements
+  // Form Elements
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
   const showRegister = document.getElementById("showRegister");
   const backToLogin = document.getElementById("backToLogin");
+  const googleSignInBtn = document.getElementById("googleSignInBtn");
 
-  // ✅ Toggle UI
   showRegister.addEventListener("click", () => {
     loginForm.style.display = "none";
     registerForm.style.display = "block";
@@ -124,12 +135,11 @@
     loginForm.style.display = "block";
   });
 
-  // ✅ Login
+  // Email/Password Login
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "Techniciansdashboard.html";
@@ -138,27 +148,45 @@
     }
   });
 
-  // ✅ Registration
+  // Register and Save to Firestore
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("reg-email").value;
     const password = document.getElementById("reg-password").value;
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // ✅ Save technician to Firestore
-      await setDoc(doc(db, "Technician Name", user.uid), {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "Technician Name", userCred.user.uid), {
         email: email,
         name: "Technician"
       });
-
       alert("Registration successful! Please log in.");
       registerForm.style.display = "none";
       loginForm.style.display = "block";
     } catch (err) {
       alert("Registration error: " + err.message);
+    }
+  });
+
+  // ✅ Google Sign-In Handler
+  googleSignInBtn.addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if already exists in Firestore
+      const userDocRef = doc(db, "Technician Name", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          email: user.email,
+          name: user.displayName || "Technician"
+        });
+      }
+
+      window.location.href = "Techniciansdashboard.html";
+    } catch (err) {
+      alert("Google Sign-In error: " + err.message);
     }
   });
 </script>
