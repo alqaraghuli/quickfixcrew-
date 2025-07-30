@@ -89,61 +89,78 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
-      authDomain: "quickfixcrew-717cc.firebaseapp.com",
-      projectId: "quickfixcrew-717cc",
-      storageBucket: "quickfixcrew-717cc.appspot.com",
-      messagingSenderId: "907519125984",
-      appId: "1:907519125984:web:20eced6ae597eb454b2385"
-    };
+  // ✅ Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    const showRegister = document.getElementById("showRegister");
-    const backToLogin = document.getElementById("backToLogin");
+  // ✅ UI Elements
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const showRegister = document.getElementById("showRegister");
+  const backToLogin = document.getElementById("backToLogin");
 
-    showRegister.addEventListener("click", () => {
-      loginForm.style.display = "none";
-      registerForm.style.display = "block";
-    });
+  // ✅ Toggle UI
+  showRegister.addEventListener("click", () => {
+    loginForm.style.display = "none";
+    registerForm.style.display = "block";
+  });
 
-    backToLogin.addEventListener("click", () => {
+  backToLogin.addEventListener("click", () => {
+    registerForm.style.display = "none";
+    loginForm.style.display = "block";
+  });
+
+  // ✅ Login
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "Techniciansdashboard.html";
+    } catch (err) {
+      alert("Login error: " + err.message);
+    }
+  });
+
+  // ✅ Registration
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("reg-email").value;
+    const password = document.getElementById("reg-password").value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // ✅ Save technician to Firestore
+      await setDoc(doc(db, "Technician Name", user.uid), {
+        email: email,
+        name: "Technician"
+      });
+
+      alert("Registration successful! Please log in.");
       registerForm.style.display = "none";
       loginForm.style.display = "block";
-    });
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "Techniciansdashboard.html";
-      } catch (err) {
-        alert("Login error: " + err.message);
-      }
-    });
-
-    registerForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("reg-email").value;
-      const password = document.getElementById("reg-password").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert("Registration successful! Please log in.");
-        registerForm.style.display = "none";
-        loginForm.style.display = "block";
-      } catch (err) {
-        alert("Registration error: " + err.message);
-      }
-    });
-  </script>
+    } catch (err) {
+      alert("Registration error: " + err.message);
+    }
+  });
+</script>
 </body>
 </html>
