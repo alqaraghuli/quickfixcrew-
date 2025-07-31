@@ -242,10 +242,10 @@
       <button class="close-btn" onclick="document.getElementById('loginModal').style.display = 'none'">&times;</button>
       <h2>Welcome to QuickFixCrew</h2>
       <div class="phone-input">
-        <select>
-          <option value="+1">Canada (+1)</option>
-        </select>
-        <input type="text" placeholder="Phone number">
+        <select id="country-code">
+  <option value="+1">Canada (+1)</option>
+</select>
+<input type="text" id="phone-input" placeholder="Phone number">
       </div>
       <button class="continue-btn">Continue</button>
       <div class="or-divider">or</div>
@@ -307,7 +307,7 @@
     });
   </script>
 
-  <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth,
@@ -334,6 +334,8 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const continueBtn = document.querySelector(".continue-btn");
     const googleBtn = document.querySelector(".google-btn");
+    const emailBtn = document.querySelector(".email-btn");
+    const facebookBtn = document.querySelector(".facebook-btn");
 
     if (logoutBtn) {
       logoutBtn.addEventListener("click", (e) => {
@@ -350,23 +352,25 @@
     }
 
     if (continueBtn) {
-      window.recaptchaVerifier = new RecaptchaVerifier(continueBtn, {
+      window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container", {
         size: 'invisible',
-        callback: (response) => {
-          // reCAPTCHA solved - will proceed with submit
+        callback: () => {
+          // reCAPTCHA solved
         }
       }, auth);
 
-      continueBtn.addEventListener("click", () => {
-        const phoneInput = document.querySelector(".phone-input input").value;
-        const fullPhone = '+1' + phoneInput.replace(/[^\d]/g, '');
+      continueBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const phoneInput = document.querySelector("#phone-input").value;
+        const countryCode = document.querySelector("#country-code").value;
+        const fullPhone = countryCode + phoneInput.replace(/[^\d]/g, '');
 
         signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
           .then((confirmationResult) => {
             const code = prompt("Enter the verification code sent to your phone:");
             return confirmationResult.confirm(code);
           })
-          .then((result) => {
+          .then(() => {
             alert("Phone login successful!");
             document.getElementById("loginModal").style.display = "none";
           })
@@ -380,7 +384,8 @@
     }
 
     if (googleBtn) {
-      googleBtn.addEventListener("click", () => {
+      googleBtn.addEventListener("click", (e) => {
+        e.preventDefault();
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
           .then(() => {
@@ -392,7 +397,23 @@
           });
       });
     }
+
+    if (emailBtn) {
+      emailBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("Email login is not implemented yet.");
+      });
+    }
+
+    if (facebookBtn) {
+      facebookBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("Facebook login is not implemented yet.");
+      });
+    }
   });
 </script>
+<!-- Invisible reCAPTCHA container for phone auth -->
+<div id="recaptcha-container"></div>
 </body>
 </html>
