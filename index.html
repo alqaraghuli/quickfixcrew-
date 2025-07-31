@@ -90,11 +90,14 @@
       background: #333;
     }
 
-    .profile-menu {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
+   .profile-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
     .profile-icon {
       width: 40px;
@@ -229,17 +232,25 @@
   </style>
 </head>
 <body>
-  <div class="profile-menu">
-    <div class="profile-icon" id="menuIcon"></div>
-    <div class="dropdown" id="dropdownMenu">
-      <a href="customer-profile.html">Profile</a>
-      <a href="Messaging%20Inbox.html">Messages</a>
-      <a href="#">Account Settings</a>
-      <a href="#">Language & Currency</a>
-      <a href="#">Help Center</a>
-      <a href="#" onclick="document.getElementById('loginModal').style.display = 'flex'">Login or Sign Up</a>
-      <a href="#" id="logoutBtn">Logout</a>
-    </div>
+   <div class="profile-menu">     
+  <!-- 👋 Welcome message next to profile icon -->
+  <div id="welcomeBanner" style="display: none; font-weight: bold; color: white; margin-right: 10px; float: left;"></div>
+
+  <!-- 👤 Profile icon -->
+  <div class="profile-icon" id="menuIcon"></div>
+
+  <!-- 🔽 Dropdown menu -->
+  <div class="dropdown" id="dropdownMenu">
+    <a href="customer-profile.html">Profile</a>
+    <a href="Messaging%20Inbox.html">Messages</a>
+    <a href="#">Account Settings</a>
+    <a href="#">Language & Currency</a>
+    <a href="#">Help Center</a>
+    <a href="#" onclick="document.getElementById('loginModal').style.display = 'flex'" id="loginLink">Login or Sign Up</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+  </div>
+
   </div>
 
   <div id="loginModal" class="modal">
@@ -342,7 +353,7 @@
       }
     });
 
-  // 🔒 Logout
+ // 🔒 Logout
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", (e) => {
@@ -366,6 +377,7 @@ if (logoutBtn) {
     });
   });
 }
+
 
     // 📞 Phone Login
     const continueBtn = document.querySelector(".continue-btn");
@@ -436,6 +448,30 @@ if (logoutBtn) {
       });
     }
   });
+
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+  const loginLink = document.getElementById("loginLink");
+  const welcomeBanner = document.getElementById("welcomeBanner");
+
+  if (user) {
+    // Hide login link
+    if (loginLink) loginLink.style.display = "none";
+
+    // Show welcome message with name or email
+    if (welcomeBanner) {
+      const displayName = user.displayName || user.email || "User";
+      welcomeBanner.textContent = `Welcome, ${displayName}!`;
+      welcomeBanner.style.display = "block";
+    }
+
+  } else {
+    if (loginLink) loginLink.style.display = "block";
+    if (welcomeBanner) welcomeBanner.style.display = "none";
+  }
+});
+
 </script>
 
 <div id="recaptcha-container"></div>
