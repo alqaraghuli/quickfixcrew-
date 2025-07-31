@@ -329,7 +329,6 @@
   const auth = getAuth(app);
 
   window.addEventListener("DOMContentLoaded", () => {
-    // ✅ reCAPTCHA verifier (must be after DOM is loaded)
     window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
       size: 'invisible',
       callback: (response) => {
@@ -337,21 +336,17 @@
       }
     });
 
-    // 🔒 Logout
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", (e) => {
         e.preventDefault();
-       signOut(auth).then(() => {
-  alert("You have been logged out.");
-  document.getElementById("loginModal").style.display = "flex";
-});
-
-});
-
+        signOut(auth).then(() => {
+          alert("You have been logged out.");
+          document.getElementById("loginModal").style.display = "flex";
+        });
+      });
     }
 
-    // 📞 Phone Login
     const continueBtn = document.querySelector(".continue-btn");
     if (continueBtn) {
       continueBtn.addEventListener("click", (e) => {
@@ -378,7 +373,6 @@
       });
     }
 
-    // 🔐 Google Login (redirect instead of popup to avoid block)
     const googleBtn = document.querySelector(".google-btn");
     if (googleBtn) {
       googleBtn.addEventListener("click", (e) => {
@@ -388,7 +382,6 @@
       });
     }
 
-    // 📧 Email/Password Login
     const emailLoginBtn = document.getElementById("email-login-btn");
     if (emailLoginBtn) {
       emailLoginBtn.addEventListener("click", async () => {
@@ -404,7 +397,6 @@
       });
     }
 
-    // 🆕 Email/Password Sign-Up
     const emailSignupBtn = document.getElementById("email-signup-btn");
     if (emailSignupBtn) {
       emailSignupBtn.addEventListener("click", async () => {
@@ -421,8 +413,6 @@
     }
   });
 </script>
-
 <div id="recaptcha-container"></div>
-
 </body>
 </html>
