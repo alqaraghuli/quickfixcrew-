@@ -342,19 +342,30 @@
       }
     });
 
-    // 🔒 Logout
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-       signOut(auth).then(() => {
-  alert("You have been logged out.");
-  document.getElementById("loginModal").style.display = "flex";
-});
+  // 🔒 Logout
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth).then(() => {
+      alert("You have been logged out.");
 
-});
+      // Show login modal again
+      document.getElementById("loginModal").style.display = "flex";
 
-    }
+      // Clear input fields
+      const phoneInput = document.getElementById("phone-input");
+      const emailInput = document.getElementById("email-input");
+      const passwordInput = document.getElementById("password-input");
+
+      if (phoneInput) phoneInput.value = "";
+      if (emailInput) emailInput.value = "";
+      if (passwordInput) passwordInput.value = "";
+    }).catch((error) => {
+      console.error("Logout failed:", error);
+    });
+  });
+}
 
     // 📞 Phone Login
     const continueBtn = document.querySelector(".continue-btn");
