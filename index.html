@@ -303,145 +303,126 @@
     });
   </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      signOut,
-      signInWithPhoneNumber,
-      RecaptchaVerifier,
-      GoogleAuthProvider,
-      signInWithPopup
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    signOut,
+    signInWithPhoneNumber,
+    RecaptchaVerifier,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
-      authDomain: "quickfixcrew-717cc.firebaseapp.com",
-      projectId: "quickfixcrew-717cc",
-      storageBucket: "quickfixcrew-717cc.appspot.com",
-      messagingSenderId: "907519125984",
-      appId: "1:907519125984:web:20eced6ae597eb454b2385"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
   window.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.getElementById("logoutBtn");
-  const continueBtn = document.querySelector(".continue-btn");
-  const googleBtn = document.querySelector(".google-btn");
-
-  // ✅ Create reCAPTCHA verifier after DOM is ready
-  window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-    size: 'invisible',
-    callback: (response) => {
-      console.log("reCAPTCHA solved:", response);
-    }
-  });
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => window.location.href = "customer-login.html");
+    // ✅ reCAPTCHA verifier (must be after DOM is loaded)
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: 'invisible',
+      callback: (response) => {
+        console.log("reCAPTCHA solved:", response);
+      }
     });
-  }
 
-  if (continueBtn) {
-    continueBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const phoneInput = document.querySelector("#phone-input").value;
-      const countryCode = document.querySelector("#country-code").value;
-      const fullPhone = countryCode + phoneInput.replace(/[^\d]/g, '');
-
-      signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
-        .then((confirmationResult) => {
-          const code = prompt("Enter the verification code sent to your phone:");
-          return confirmationResult.confirm(code);
-        })
-        .then(() => {
-          alert("Phone login successful!");
-          document.getElementById("loginModal").style.display = "none";
-        })
-        .catch((error) => {
-          alert("Phone login failed: " + error.message);
-          window.recaptchaVerifier.render().then(widgetId => {
-            grecaptcha.reset(widgetId);
-          });
-        });
-    });
-  }
-
-  if (googleBtn) {
-    googleBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(() => {
-          alert("Google login successful!");
-          document.getElementById("loginModal").style.display = "none";
-        })
-        .catch((error) => {
-          alert("Google login failed: " + error.message);
-        });
-    });
-  }
+    // 🔒 Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+       signOut(auth).then(() => {
+  alert("You have been logged out.");
+  document.getElementById("loginModal").style.display = "flex";
 });
 
+});
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const logoutBtn = document.getElementById("logoutBtn");
-      const continueBtn = document.querySelector(".continue-btn");
-      const googleBtn = document.querySelector(".google-btn");
+    }
 
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          signOut(auth).then(() => window.location.href = "customer-login.html");
-        });
-      }
+    // 📞 Phone Login
+    const continueBtn = document.querySelector(".continue-btn");
+    if (continueBtn) {
+      continueBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const phoneInput = document.querySelector("#phone-input").value;
+        const countryCode = document.querySelector("#country-code").value;
+        const fullPhone = countryCode + phoneInput.replace(/[^\d]/g, '');
 
-      if (continueBtn) {
-        continueBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          const phoneInput = document.querySelector("#phone-input").value;
-          const countryCode = document.querySelector("#country-code").value;
-          const fullPhone = countryCode + phoneInput.replace(/[^\d]/g, '');
-
-          signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
-            .then((confirmationResult) => {
-              const code = prompt("Enter the verification code sent to your phone:");
-              return confirmationResult.confirm(code);
-            })
-            .then(() => {
-              alert("Phone login successful!");
-              document.getElementById("loginModal").style.display = "none";
-            })
-            .catch((error) => {
-              alert("Phone login failed: " + error.message);
-              window.recaptchaVerifier.render().then(widgetId => {
-                grecaptcha.reset(widgetId);
-              });
+        signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
+          .then((confirmationResult) => {
+            const code = prompt("Enter the verification code sent to your phone:");
+            return confirmationResult.confirm(code);
+          })
+          .then(() => {
+            alert("Phone login successful!");
+            document.getElementById("loginModal").style.display = "none";
+          })
+          .catch((error) => {
+            alert("Phone login failed: " + error.message);
+            window.recaptchaVerifier.render().then(widgetId => {
+              grecaptcha.reset(widgetId);
             });
-        });
-      }
+          });
+      });
+    }
 
-      if (googleBtn) {
-        googleBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          const provider = new GoogleAuthProvider();
-          signInWithPopup(auth, provider)
-            .then(() => {
-              alert("Google login successful!");
-              document.getElementById("loginModal").style.display = "none";
-            })
-            .catch((error) => {
-              alert("Google login failed: " + error.message);
-            });
-        });
-      }
-    });
-  </script>
+    // 🔐 Google Login (redirect instead of popup to avoid block)
+    const googleBtn = document.querySelector(".google-btn");
+    if (googleBtn) {
+      googleBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const provider = new GoogleAuthProvider();
+        signInWithRedirect(auth, provider);
+      });
+    }
 
-  <div id="recaptcha-container"></div>
+    // 📧 Email/Password Login
+    const emailLoginBtn = document.getElementById("email-login-btn");
+    if (emailLoginBtn) {
+      emailLoginBtn.addEventListener("click", async () => {
+        const email = document.getElementById("email-input").value;
+        const password = document.getElementById("password-input").value;
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          alert("Logged in with Email!");
+          document.getElementById("loginModal").style.display = "none";
+        } catch (error) {
+          alert("Email login failed: " + error.message);
+        }
+      });
+    }
+
+    // 🆕 Email/Password Sign-Up
+    const emailSignupBtn = document.getElementById("email-signup-btn");
+    if (emailSignupBtn) {
+      emailSignupBtn.addEventListener("click", async () => {
+        const email = document.getElementById("email-input").value;
+        const password = document.getElementById("password-input").value;
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          alert("Account created & logged in!");
+          document.getElementById("loginModal").style.display = "none";
+        } catch (error) {
+          alert("Sign-up failed: " + error.message);
+        }
+      });
+    }
+  });
+</script>
+
+<div id="recaptcha-container"></div>
+
 </body>
 </html>
