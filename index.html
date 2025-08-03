@@ -47,6 +47,36 @@
       text-decoration: none;
     }
 
+.btn-tech {
+  background-color: orange;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  display: block;
+  margin: 5px 0;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-customer {
+  background-color: #007acc; /* blue */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  display: block;
+  margin: 5px 0;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-tech:hover,
+.btn-customer:hover {
+  opacity: 0.9;
+}
+
+
     .section {
       max-width: 1100px;
       margin: auto;
@@ -232,26 +262,32 @@
   </style>
 </head>
 <body>
-   <div class="profile-menu">     
-  <!-- 👋 Welcome message next to profile icon -->
-  <div id="welcomeBanner" style="display: none; font-weight: bold; color: white; margin-right: 10px; float: left;"></div>
-
+  <div class="profile-menu">     
   <!-- 👤 Profile icon -->
   <div class="profile-icon" id="menuIcon"></div>
 
   <!-- 🔽 Dropdown menu -->
   <div class="dropdown" id="dropdownMenu">
-    <a href="customer-profile.html">Profile</a>
-    <a href="Messaging%20Inbox.html">Messages</a>
-    <a href="#">Account Settings</a>
-    <a href="#">Language & Currency</a>
-    <a href="#">Help Center</a>
-    <a href="#" onclick="document.getElementById('loginModal').style.display = 'flex'" id="loginLink">Login or Sign Up</a>
-    <a href="#" id="logoutBtn">Logout</a>
-  </div>
-  </div>
+   <a href="#" class="btn-tech" onclick="document.getElementById('loginModal').style.display = 'flex'">Login or Sign Up</a>
 
+
+    <!-- 👤 Customer-only menu -->
+    <div id="customerMenu" style="display: none;">
+      <a href="customer-profile.html">Profile</a>
+      <a href="Messaging%20Inbox.html">Messages</a>
+      <a href="#">Account Settings</a>
+      <a href="#">Language & Currency</a>
+      <a href="#">Help Center</a>
+    </div>
+
+    <a href="#" id="logoutBtn">Logout</a>
+    <span id="welcomeBanner" style="display: none;"></span>
   </div>
+</div>
+
+<!-- 🔒 Required for Firebase reCAPTCHA -->
+<div id="recaptcha-container"></div>
+
 
   <div id="loginModal" class="modal">
     <div class="modal-content">
@@ -280,21 +316,21 @@
   <header>
     <div class="logo">QuickFixCrew</div>
     <div class="nav-buttons">
-      <a href="technician-login.html" class="btn-primary">Technician Login</a>
+      
     </div>
   </header>
 
   <section class="section hero">
     <h2>Your Trusted Repair Crew — Fast, Friendly, Reliable</h2>
     <p style="margin: 20px 0;">Connecting you with skilled technicians for all your repair needs.</p>
-    <a href="post-job.html" class="btn-primary">Post a Job</a>
-    <a href="technicians.html" class="btn-primary">Hire a Technician</a>
+    <a href="Post%20Service.html" class="btn-primary">Post Service</a>
+    <a href="tools-market.html" class="btn-primary">Buy or Sell Tools</a>
   </section>
 
   <section class="section">
     <h2 style="text-align:center; margin-bottom: 40px;">How It Works</h2>
     <div class="how-it-works">
-      <div><h3>1. Post a Job</h3><p>Tell us what you need fixed or installed.</p></div>
+      <div><h3>1. Post a Service</h3><p>Describe what you offer or what you need.</p></div>
       <div><h3>2. Get Matched</h3><p>We connect you with nearby qualified technicians.</p></div>
       <div><h3>3. Job Completed</h3><p>Get the work done and leave a review!</p></div>
     </div>
@@ -319,17 +355,21 @@
     });
   </script>
 
-  <script type="module">
+ 
+<div id="recaptcha-container"></div>
+
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth,
-    signOut,
-    signInWithPhoneNumber,
-    RecaptchaVerifier,
-    GoogleAuthProvider,
-    signInWithRedirect,
+    signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
+    GoogleAuthProvider,
+    OAuthProvider,
+    FacebookAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   const firebaseConfig = {
@@ -344,137 +384,68 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  window.addEventListener("DOMContentLoaded", () => {
-    // ✅ reCAPTCHA verifier (must be after DOM is loaded)
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: 'invisible',
-      callback: (response) => {
-        console.log("reCAPTCHA solved:", response);
-      }
-    });
-
- // 🔒 Logout
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    signOut(auth).then(() => {
-      alert("You have been logged out.");
-
-      // Show login modal again
-      document.getElementById("loginModal").style.display = "flex";
-
-      // Clear input fields
-      const phoneInput = document.getElementById("phone-input");
-      const emailInput = document.getElementById("email-input");
-      const passwordInput = document.getElementById("password-input");
-
-      if (phoneInput) phoneInput.value = "";
-      if (emailInput) emailInput.value = "";
-      if (passwordInput) passwordInput.value = "";
-    }).catch((error) => {
-      console.error("Logout failed:", error);
-    });
-  });
-}
-
-
-    // 📞 Phone Login
-    const continueBtn = document.querySelector(".continue-btn");
-    if (continueBtn) {
-      continueBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const phoneInput = document.querySelector("#phone-input").value;
-        const countryCode = document.querySelector("#country-code").value;
-        const fullPhone = countryCode + phoneInput.replace(/[^\d]/g, '');
-
-        signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
-          .then((confirmationResult) => {
-            const code = prompt("Enter the verification code sent to your phone:");
-            return confirmationResult.confirm(code);
-          })
-          .then(() => {
-            alert("Phone login successful!");
-            document.getElementById("loginModal").style.display = "none";
-          })
-          .catch((error) => {
-            alert("Phone login failed: " + error.message);
-            window.recaptchaVerifier.render().then(widgetId => {
-              grecaptcha.reset(widgetId);
-            });
-          });
-      });
-    }
-
-    // 🔐 Google Login (redirect instead of popup to avoid block)
-    const googleBtn = document.querySelector(".google-btn");
-    if (googleBtn) {
-      googleBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
-      });
-    }
-
-    // 📧 Email/Password Login
-    const emailLoginBtn = document.getElementById("email-login-btn");
-    if (emailLoginBtn) {
-      emailLoginBtn.addEventListener("click", async () => {
-        const email = document.getElementById("email-input").value;
-        const password = document.getElementById("password-input").value;
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          alert("Logged in with Email!");
-          document.getElementById("loginModal").style.display = "none";
-        } catch (error) {
-          alert("Email login failed: " + error.message);
-        }
-      });
-    }
-
-    // 🆕 Email/Password Sign-Up
-    const emailSignupBtn = document.getElementById("email-signup-btn");
-    if (emailSignupBtn) {
-      emailSignupBtn.addEventListener("click", async () => {
-        const email = document.getElementById("email-input").value;
-        const password = document.getElementById("password-input").value;
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          alert("Account created & logged in!");
-          document.getElementById("loginModal").style.display = "none";
-        } catch (error) {
-          alert("Sign-up failed: " + error.message);
-        }
-      });
+  // EMAIL LOGIN
+  document.getElementById("email-login-btn").addEventListener("click", async () => {
+    const email = document.getElementById("email-input").value;
+    const password = document.getElementById("password-input").value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("✅ Logged in successfully!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ " + error.message);
     }
   });
 
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-onAuthStateChanged(auth, (user) => {
-  const loginLink = document.getElementById("loginLink");
-  const welcomeBanner = document.getElementById("welcomeBanner");
-
-  if (user) {
-    // Hide login link
-    if (loginLink) loginLink.style.display = "none";
-
-    // Show welcome message with name or email
-    if (welcomeBanner) {
-      const displayName = user.displayName || user.email || "User";
-      welcomeBanner.textContent = `Welcome, ${displayName}!`;
-      welcomeBanner.style.display = "block";
+  // EMAIL SIGNUP
+  document.getElementById("email-signup-btn").addEventListener("click", async () => {
+    const email = document.getElementById("email-input").value;
+    const password = document.getElementById("password-input").value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("✅ Account created!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ " + error.message);
     }
+  });
 
-  } else {
-    if (loginLink) loginLink.style.display = "block";
-    if (welcomeBanner) welcomeBanner.style.display = "none";
-  }
-});
+  // GOOGLE LOGIN
+  document.querySelector(".google-btn").addEventListener("click", async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      alert("✅ Signed in with Google!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ " + error.message);
+    }
+  });
+
+  // APPLE LOGIN
+  document.querySelector(".apple-btn").addEventListener("click", async () => {
+    const provider = new OAuthProvider("apple.com");
+    try {
+      await signInWithPopup(auth, provider);
+      alert("✅ Signed in with Apple!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ " + error.message);
+    }
+  });
+
+  // FACEBOOK LOGIN
+  document.querySelector(".facebook-btn").addEventListener("click", async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      alert("✅ Signed in with Facebook!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ " + error.message);
+    }
+  });
 
 </script>
-
-<div id="recaptcha-container"></div>
-
 </body>
 </html>
