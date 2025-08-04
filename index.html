@@ -255,6 +255,18 @@
       cursor: pointer;
     }
 
+#welcomeBanner {
+  display: block;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word;
+  white-space: normal;
+  max-width: 200px;
+  overflow-wrap: break-word;
+}
+
+
     #recaptcha-container {
       position: absolute;
       z-index: 0;
@@ -445,6 +457,47 @@
       alert("❌ " + error.message);
     }
   });
+
+// ✅ LOGOUT BUTTON HANDLER
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await auth.signOut(); // Firebase sign-out
+    // Optional: Clear sessionStorage or UI flags
+    window.location.href = "index.html?showLogin=true"; // Redirect to homepage
+  } catch (error) {
+    alert("❌ Logout failed: " + error.message);
+  }
+});
+
+// ✅ Auto-open login modal if redirected after logout
+window.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("showLogin") === "true") {
+    document.getElementById("loginModal").style.display = "flex";
+  }
+});
+
+// ✅ Show/hide logout and customer menu based on auth state
+onAuthStateChanged(auth, (user) => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  const welcomeBanner = document.getElementById("welcomeBanner");
+  const customerMenu = document.getElementById("customerMenu");
+
+  if (user) {
+    logoutBtn.style.display = "block";
+    welcomeBanner.style.display = "inline";
+    const userName = user.displayName || user.email.split("@")[0];
+    welcomeBanner.textContent = `Welcome, ${userName}`;
+    customerMenu.style.display = "block";
+  } else {
+    logoutBtn.style.display = "none";
+    welcomeBanner.style.display = "none";
+    customerMenu.style.display = "none";
+  }
+});
+
+
+
 
 </script>
 </body>
