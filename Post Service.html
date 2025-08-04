@@ -204,9 +204,9 @@
     <div id="jobPosts"></div>
   </div>
 
-  <script type="module">
+ <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, addDoc, getDocs, serverTimestamp,
     doc, getDoc, setDoc, query, where, deleteDoc
@@ -214,7 +214,6 @@
   import {
     getStorage, ref, uploadBytes, getDownloadURL
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
 
   const firebaseConfig = {
     apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
@@ -236,33 +235,34 @@
   const serviceInput = document.getElementById('service');
   const jobPostsContainer = document.getElementById('jobPosts');
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
+  let currentUser = null;
 
-  const techRef = doc(db, "technician_profiles", user.uid);
-  const techSnap = await getDoc(techRef);
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
 
-  if (!techSnap.exists()) {
-    // ❌ Not signed up as technician → deny access
-    alert("Access denied. You must sign up as a technician first.");
-    await signOut(auth); // Optional: sign them out to avoid confusion
-    window.location.href = "technician-login.html";
-    return;
-  }
+    if (user) {
+      const techRef = doc(db, "technician_profiles", user.uid);
+      const techSnap = await getDoc(techRef);
+let name = "";
+if (techSnap.exists()) {
+  name = techSnap.data().name?.trim();
+}
 
-  const techData = techSnap.data();
-  const techName = techData.name?.trim() || user.displayName || user.email || "Technician";
+if (!name && user.displayName) {
+  name = user.displayName.split(" ")[0]; // First name only
+} else if (!name && user.email) {
+  name = user.email.split("@")[0]; // Email prefix
+} else if (!name) {
+  name = "Technician";
+}
 
-  // Set welcome message
-  document.getElementById("name").value = techName;
-  welcomeMessage.textContent = `Welcome, ${techName}!`;
-  welcomeMessage.style.display = "block";
+      document.getElementById("name").value = name;
+      welcomeMessage.textContent = `Welcome, ${name}!`;
+      welcomeMessage.style.display = "block";
+    }
 
-  loadPosts();
-});
+    loadPosts();
+  });
 
   serviceCards.forEach(card => {
     card.addEventListener('click', () => {
@@ -275,7 +275,7 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
       await signOut(auth);
-     window.location.href = "index.html?showLogin=true";
+      window.location.href = "index.html?showLogin=true";
     } catch (err) {
       alert("Logout failed: " + err.message);
     }
@@ -283,6 +283,11 @@ onAuthStateChanged(auth, async (user) => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+  window.location.href = "index.html?showLogin=true";
+  return;
+}
 
     const name = document.getElementById('name').value;
     const service = document.getElementById('service').value;
@@ -293,7 +298,6 @@ onAuthStateChanged(auth, async (user) => {
     let imageUrl = '';
 
     try {
-      // Upload image if provided
       if (imageFile) {
         const imageRef = ref(storage, `tech_media/${Date.now()}_${imageFile.name}`);
         const uploadSnap = await uploadBytes(imageRef, imageFile);
@@ -302,14 +306,13 @@ onAuthStateChanged(auth, async (user) => {
 
       const data = {
         name, service, location, experience, description,
-        technicianId: auth.currentUser.uid,
+        technicianId: currentUser.uid,
         imageUrl,
         createdAt: serverTimestamp()
       };
 
       if (form.dataset.editId) {
-        const postRef = doc(db, "technician_posts", form.dataset.editId);
-        await setDoc(postRef, data);
+        await setDoc(doc(db, "technician_posts", form.dataset.editId), data);
         alert("Post updated!");
         delete form.dataset.editId;
         form.querySelector('button[type="submit"]').textContent = "Submit Post";
@@ -328,10 +331,9 @@ onAuthStateChanged(auth, async (user) => {
 
   async function loadPosts() {
     jobPostsContainer.innerHTML = '';
-    const user = auth.currentUser;
-    if (!user) return;
+    if (!currentUser) return;
 
-    const q = query(collection(db, 'technician_posts'), where('technicianId', '==', user.uid));
+    const q = query(collection(db, 'technician_posts'), where('technicianId', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach(docSnap => {
@@ -341,21 +343,28 @@ onAuthStateChanged(auth, async (user) => {
       const div = document.createElement('div');
       div.className = 'post';
       div.innerHTML = `
-        <h4>${post.service} - ${post.name}</h4>
-        <p><strong>Location:</strong> ${post.location}</p>
-        <p><strong>Experience:</strong> ${post.experience}</p>
-        <p><strong>Description:</strong> ${post.description}</p>
-        ${post.imageUrl ? `<img src="${post.imageUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 10px;" />` : ''}
-        <div class="action-btns">
-          <button class="edit-btn" data-id="${postId}">✏️ Edit</button>
-          <button class="delete-btn" data-id="${postId}">🗑️ Delete</button>
-          <button class="review-btn">⭐ Review</button>
-        </div>
-      `;
+  <h4>${post.service} - ${post.name}</h4>
+  <p><strong>Location:</strong> ${post.location}</p>
+  <p><strong>Experience:</strong> ${post.experience}</p>
+  <p><strong>Description:</strong> ${post.description}</p>
+  ${post.imageUrl ? `<img src="${post.imageUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 10px;" />` : ''}
+  <div class="action-btns">
+    <button class="edit-btn" data-id="${postId}">✏️ Edit</button>
+    <button class="delete-btn" data-id="${postId}">🗑️ Delete</button>
+    <button class="review-btn" data-id="${postId}">⭐ Review</button>
+  </div>
+`;
       jobPostsContainer.appendChild(div);
     });
 
-    // DELETE handler
+document.querySelectorAll('.review-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const postId = e.target.dataset.id;
+    alert(`You clicked Review for post ID: ${postId}`);
+    // 🔧 You can open a modal here or redirect to a review page
+  });
+});
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.dataset.id;
@@ -366,7 +375,6 @@ onAuthStateChanged(auth, async (user) => {
       });
     });
 
-    // EDIT handler
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.dataset.id;
