@@ -186,10 +186,12 @@ if (sidebarImage) {
   document.getElementById('notifications').value = data.notifications || 'Email';
 
   // ✅ Set profile image preview
-  if (data.profileImageUrl) {
-    avatarPreview.src = data.profileImageUrl;
-    if (sidebarImage) sidebarImage.src = data.profileImageUrl;
-  }
+const fallbackAvatar = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
+avatarPreview.src = data.profileImageUrl || fallbackAvatar;
+if (sidebarImage) {
+  sidebarImage.src = data.profileImageUrl || fallbackAvatar;
+}
+
 
   // ✅ Save Profile Form
   document.getElementById("profileForm").addEventListener("submit", async function (e) {
@@ -234,4 +236,5 @@ if (sidebarImage) {
 </script>
 </body>
 </html>
+
 
