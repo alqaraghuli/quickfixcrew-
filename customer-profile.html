@@ -171,64 +171,67 @@ if (sidebarImage) {
 
 
   onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const docRef = doc(db, "customers", user.uid);
-    const docSnap = await getDoc(docRef);
-    let data = {};
-    if (docSnap.exists()) {
-      data = docSnap.data();
+  if (!user) return;
 
-      // ✅ Fill form
-      document.getElementById('fullName').value = data.fullName || '';
-      document.getElementById('phone').value = data.phone || '';
-      document.getElementById('email').value = data.email || '';
-      document.getElementById('location').value = data.location || '';
-      document.getElementById('language').value = data.language || 'English';
-      document.getElementById('notifications').value = data.notifications || 'Email';
+  const docRef = doc(db, "customers", user.uid);
+  const docSnap = await getDoc(docRef);
+  let data = docSnap.exists() ? docSnap.data() : {};
 
-      // ✅ Set avatar preview and sidebar image
-      if (data.profileImageUrl) {
-        avatarPreview.src = data.profileImageUrl;
-        if (sidebarImage) {
-          sidebarImage.src = data.profileImageUrl;
-        }
+  // ✅ Pre-fill fields
+  document.getElementById('fullName').value = data.fullName || '';
+  document.getElementById('phone').value = data.phone || '';
+  document.getElementById('email').value = data.email || '';
+  document.getElementById('location').value = data.location || '';
+  document.getElementById('language').value = data.language || 'English';
+  document.getElementById('notifications').value = data.notifications || 'Email';
+
+  // ✅ Set profile image preview
+  if (data.profileImageUrl) {
+    avatarPreview.src = data.profileImageUrl;
+    if (sidebarImage) sidebarImage.src = data.profileImageUrl;
+  }
+
+  // ✅ Save Profile Form
+  document.getElementById("profileForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById("fullName").value;
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+    const location = document.getElementById("location").value;
+    const language = document.getElementById("language").value;
+    const notifications = document.getElementById("notifications").value;
+
+    let profileImageUrl = avatarPreview.src;
+
+    if (selectedImageFile && selectedImageFile instanceof File) {
+      try {
+        const imagePath = `customer_avatars/${user.uid}_${Date.now()}`;
+        const imageRef = ref(storage, imagePath);
+        await uploadBytes(imageRef, selectedImageFile);
+        profileImageUrl = await getDownloadURL(imageRef);
+      } catch (error) {
+        console.error("❌ Upload error:", error);
+        alert("❌ Failed to upload image.");
+        return;
       }
     }
 
-    // ✅ Form submission logic
-    document.getElementById("profileForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const fullName = document.getElementById("fullName").value;
-      const phone = document.getElementById("phone").value;
-      const email = document.getElementById("email").value;
-      const location = document.getElementById("location").value;
-      const language = document.getElementById("language").value;
-      const notifications = document.getElementById("notifications").value;
-
-      let profileImageUrl = avatarPreview.src;
-
-      if (selectedImageFile) {
-        const imageRef = ref(storage, `customer_avatars/${user.uid}_${Date.now()}`);
-        await uploadBytes(imageRef, selectedImageFile);
-        profileImageUrl = await getDownloadURL(imageRef);
-      }
-
-      await setDoc(doc(db, "customers", user.uid), {
-        fullName,
-        phone,
-        email,
-        location,
-        language,
-        notifications,
-        profileImageUrl
-      });
-
-      alert("✅ Profile saved!");
+    await setDoc(doc(db, "customers", user.uid), {
+      fullName,
+      phone,
+      email,
+      location,
+      language,
+      notifications,
+      profileImageUrl
     });
-  }
+
+    alert("✅ Profile saved!");
+  });
 });
 
 </script>
 </body>
 </html>
+
