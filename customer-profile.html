@@ -187,9 +187,14 @@ if (sidebarImage) {
 
   // ✅ Set profile image preview
 const fallbackAvatar = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
-avatarPreview.src = data.profileImageUrl || fallbackAvatar;
+
+const isValidImageUrl = (url) => {
+  return url && !url.includes("imgbb.com/") && !url.includes("default-avatar.png");
+};
+
+avatarPreview.src = isValidImageUrl(data.profileImageUrl) ? data.profileImageUrl : fallbackAvatar;
 if (sidebarImage) {
-  sidebarImage.src = data.profileImageUrl || fallbackAvatar;
+  sidebarImage.src = isValidImageUrl(data.profileImageUrl) ? data.profileImageUrl : fallbackAvatar;
 }
 
 
@@ -236,5 +241,6 @@ if (sidebarImage) {
 </script>
 </body>
 </html>
+
 
 
