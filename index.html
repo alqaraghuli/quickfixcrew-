@@ -276,7 +276,7 @@
 <body>
   <div class="profile-menu">     
   <!-- 👤 Profile icon -->
-  <div class="profile-icon" id="menuIcon"></div>
+  <img id="customerAvatar" class="profile-icon" src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Customer Avatar">
 
   <!-- 🔽 Dropdown menu -->
   <div class="dropdown" id="dropdownMenu">
@@ -495,10 +495,49 @@ onAuthStateChanged(auth, (user) => {
     customerMenu.style.display = "none";
   }
 });
-
-
-
-
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAoy88ndkrmPWoupL6NgGdfoRWzxtRGZPs",
+    authDomain: "quickfixcrew-717cc.firebaseapp.com",
+    projectId: "quickfixcrew-717cc",
+    storageBucket: "quickfixcrew-717cc.appspot.com",
+    messagingSenderId: "907519125984",
+    appId: "1:907519125984:web:20eced6ae597eb454b2385"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // 🔽 Load avatar if logged in
+  const avatarEl = document.getElementById("customerAvatar");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user && avatarEl) {
+      const docRef = doc(db, "customers", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.profileImageUrl) {
+          avatarEl.src = data.profileImageUrl;
+        }
+      }
+    }
+  });
+</script>
+
 </body>
 </html>
+
