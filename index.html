@@ -353,21 +353,24 @@
   </footer>
 
   <script>
-    const menuIcon = document.getElementById("menuIcon");
+  window.addEventListener("DOMContentLoaded", () => {
+    const menuIcon = document.getElementById("customerAvatar");
     const dropdownMenu = document.getElementById("dropdownMenu");
 
-    menuIcon.addEventListener("click", () => {
-      dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
-    });
+    if (menuIcon && dropdownMenu) {
+      menuIcon.addEventListener("click", () => {
+        dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+      });
 
-    window.addEventListener("click", (e) => {
-      if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
-        dropdownMenu.style.display = "none";
-      }
-    });
-  </script>
+      window.addEventListener("click", (e) => {
+        if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+          dropdownMenu.style.display = "none";
+        }
+      });
+    }
+  });
+</script>
 
- 
 <div id="recaptcha-container"></div>
 
 <script type="module">
@@ -540,4 +543,5 @@ onAuthStateChanged(auth, (user) => {
 
 </body>
 </html>
+
 
